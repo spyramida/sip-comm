@@ -119,6 +119,7 @@ public class GuiManager
     VoiceMailAction voiceMailAction = null;
     MySipphoneAction mySipphoneAction = null;
     private AuthenticationSplash authenticationSplash = null;
+    private RegistrationSplash registrationSplash = null;
 
     static boolean isThisSipphoneAnywhere = false;
 
@@ -659,6 +660,25 @@ public class GuiManager
         }
     }
 
+    
+    public boolean shouldRegister() {
+		return authenticationSplash.shouldRegister;
+	}
+    
+    
+	/*
+	 * Show register panel
+	 */
+	public void requestRegistration() {
+		if (registrationSplash != null)
+			registrationSplash.dispose();
+		registrationSplash = new RegistrationSplash(phoneFrame, true);
+
+		registrationSplash.show();
+
+	}
+	
+	
     public void requestAuthentication(String realm,
                                       String userName,
                                       char[] password)
@@ -677,16 +697,32 @@ public class GuiManager
         authenticationSplash.show();
     }
 
-    public String getAuthenticationUserName()
-    {
-        return authenticationSplash.userName;
-    }
+    
+    public String getEmail() {
+		return registrationSplash.mail;
+	}
+	
+	public String getCreditCard() {
+		return registrationSplash.creditCardNo;
+	}
+	
+	public String getPlan() {
+		return registrationSplash.plan;
+	}
+	
+	public String getAuthenticationUserName() {
+		return authenticationSplash.userName == null ? registrationSplash.userName
+				: authenticationSplash.userName;
+	}
 
-    public char[] getAuthenticationPassword()
-    {
-        return authenticationSplash.password;
-    }
+	public char[] getAuthenticationPassword() {
+		return authenticationSplash.password == null ? registrationSplash.password
+				: authenticationSplash.password;
+	}
 
+    
+    
+    
     /**
      * Displays a SubscriptionAuthorizationDialog that demands the user to
      * authorize the specified subscription request.
@@ -722,4 +758,6 @@ public class GuiManager
     }
 
 
+    
+    
 }

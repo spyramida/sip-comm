@@ -63,8 +63,7 @@ import java.awt.geom.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
+
 import net.java.sip.communicator.common.Utils;
 import net.java.sip.communicator.common.*;
 
@@ -81,7 +80,10 @@ public class AuthenticationSplash
     JTextField userNameTextField = null;
     JLabel     realmValueLabel = null;
     JPasswordField passwordTextField = null;
-
+    boolean shouldRegister = false;
+    
+    
+    
     /**
      * Resource bundle with default locale
      */
@@ -113,11 +115,13 @@ public class AuthenticationSplash
      */
     private String CMD_LOGIN = "cmd.login" /*NOI18N*/;
 
+    
+    private String CMD_REGISTER = "cmd.register" /* NOI18N */;
     // Components we need to manipulate after creation
     private JButton loginButton = null;
     private JButton cancelButton = null;
     private JButton helpButton = null;
-
+    private JButton registerButton = null;
     /**
      * Creates new form AuthenticationSplash
      */
@@ -337,6 +341,10 @@ public class AuthenticationSplash
             }
         });
         buttonPanel.add(loginButton);
+        
+        buttonPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+
+  	
 
         // space
         buttonPanel.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -352,6 +360,18 @@ public class AuthenticationSplash
             }
         });
         buttonPanel.add(cancelButton);
+        
+      //REGISTER BUTTON
+     	registerButton = new JButton();
+     	registerButton.setText("Register");
+     	registerButton.setActionCommand(CMD_REGISTER);
+     	registerButton.addActionListener(new ActionListener() {
+     		public void actionPerformed(ActionEvent event) {
+     			dialogDone(event);
+     		}
+     	});
+     	buttonPanel.add(registerButton);
+//   
 
         buttonPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 
@@ -462,6 +482,9 @@ public class AuthenticationSplash
             userName = userNameTextField.getText();
             password = passwordTextField.getPassword();
         }
+        else if (cmd.equals(CMD_REGISTER)) {
+			shouldRegister = true;
+		}
         setVisible(false);
         dispose();
     } // dialogDone()

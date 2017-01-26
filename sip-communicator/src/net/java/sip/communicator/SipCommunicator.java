@@ -61,9 +61,14 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
 import java.util.*;
+
+import javax.swing.JOptionPane;
+
 import java.awt.*;
 import net.java.sip.communicator.common.*;
 import net.java.sip.communicator.common.Console;
+import net.java.sip.communicator.db.RegisterDB;
+//import net.java.sip.communicator.db.RegisterDB;
 import net.java.sip.communicator.gui.*;
 import net.java.sip.communicator.gui.event.*;
 import net.java.sip.communicator.media.*;
@@ -797,6 +802,9 @@ public class SipCommunicator
                                              defaultValues.getUserName(),
                                              defaultValues.getPassword());
 
+			if (guiManager.shouldRegister())
+				return obtainCredentialsAndRegister();
+            
             UserCredentials credentials = new UserCredentials();
 
             credentials.setUserName(guiManager.getAuthenticationUserName());
@@ -809,6 +817,39 @@ public class SipCommunicator
             console.logExit();
         }
     }
+    
+    public UserCredentials obtainCredentialsAndRegister() {
+		try {
+			console.logEntry();
+
+			guiManager.requestRegistration();
+
+			UserCredentials credentials = new UserCredentials();
+
+			credentials.setUserName(guiManager.getAuthenticationUserName());
+			credentials.setPassword(guiManager.getAuthenticationPassword());
+
+			RegisterDB rm = new RegisterDB();
+
+			//Before inserting user to DB we should check is username is taken (already registered)
+			if (rm.checkRegister(guiManager.getAuthenticationUserName())) {
+				JOptionPane.showMessageDialog(new Frame(), "Username taken");
+				this.obtainCredentialsAndRegister();
+			}else {
+			
+				// Register with the db manager here
+				rm.registerToDB(guiManager.getAuthenticationUserName(),
+					String.valueOf(guiManager.getAuthenticationPassword()),
+					guiManager.getEmail(), guiManager.getCreditCard(), guiManager.getPlan());
+			}
+			return credentials;
+		
+		} finally {
+	
+			console.logExit();
+		}
+
+	}
 
 //============================== PROPERTIES ==================================
     protected File getPropertiesFile()
