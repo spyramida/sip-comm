@@ -76,6 +76,18 @@ public interface UserActionListener
     public void handleHangupRequest(UserCallControlEvent evt);
 
     public void handleAnswerRequest(UserCallControlEvent evt);
+    
+  //blocking
+	
+  	public void handleGetBlockList();
+      
+      public void handleNewBlockRequest();
+
+      //forwarding
+      public void handleGetForwardRequest();
+      
+      public void handleNewForwardRequest();
+      
 
     public void handleExitRequest();
 

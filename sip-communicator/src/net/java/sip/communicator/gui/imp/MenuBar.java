@@ -1,6 +1,5 @@
 package net.java.sip.communicator.gui.imp;
 
-import javax.swing.JMenuBar;
 import javax.swing.*;
 import java.awt.event.*;
 
@@ -17,6 +16,7 @@ public class MenuBar extends JMenuBar
 {
     private JMenu menu         = new JMenu("Menu");
     private JMenu settingsMenu = new JMenu("Settings");
+    JMenu actionsMenu = new JMenu("Actions");
     private JMenu helpMenu     = new JMenu("Help");
 
     public MenuBar()
@@ -24,7 +24,7 @@ public class MenuBar extends JMenuBar
         menu.setMnemonic('M');
         settingsMenu.setMnemonic('S');
         helpMenu.setMnemonic('H');
-
+        menu.add(actionsMenu);
         menu.add(settingsMenu);
         menu.add(helpMenu);
 
@@ -47,6 +47,15 @@ public class MenuBar extends JMenuBar
         menuItem.setMnemonic('X');
 
         menu.add(menuItem);
+    }
+    
+    public void addBlockAction(Action action)
+    {
+    	JMenuItem config = new JMenuItem(action);
+        config.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0));
+        config.setMnemonic('B');
+
+        actionsMenu.add(config);
     }
 
     /**

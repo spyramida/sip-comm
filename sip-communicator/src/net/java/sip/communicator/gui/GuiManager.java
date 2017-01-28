@@ -66,8 +66,9 @@ import net.java.sip.communicator.common.Console;
 import net.java.sip.communicator.gui.event.*;
 import java.awt.SystemColor;
 import javax.swing.plaf.metal.MetalLookAndFeel;
+
 import net.java.sip.communicator.gui.plaf.SipCommunicatorColorTheme;
-import java.awt.event.KeyEvent;
+
 import java.io.*;
 import net.java.sip.communicator.media.JMFRegistry;
 import net.java.sip.communicator.plugin.setup.*;
@@ -120,6 +121,7 @@ public class GuiManager
     MySipphoneAction mySipphoneAction = null;
     private AuthenticationSplash authenticationSplash = null;
     private RegistrationSplash registrationSplash = null;
+	private BlockSplash blockSplash = null;
 
     static boolean isThisSipphoneAnywhere = false;
 
@@ -143,6 +145,11 @@ public class GuiManager
 
         initActionListeners();
         phoneFrame.contactBox.setModel(new ContactsComboBoxModel());
+        
+        BlockAction blockAction = new BlockAction();
+        ( (MenuBar) phoneFrame.jMenuBar1).addBlockAction(blockAction);
+        contactList.menuBar.addBlockAction(blockAction);
+        
 
         ConfigAction configAction = new ConfigAction();
         ( (MenuBar) phoneFrame.jMenuBar1).addConfigCallAction(configAction);
@@ -210,6 +217,14 @@ public class GuiManager
     {
         contactList.show();
     }
+    
+    
+  //blocking
+  	public void setBlockList(String blocklist) {
+  		blockSplash.blockList(blocklist);
+  	}
+  	
+  	
 
     public void setContactListModel(ContactListModel model)
     {
@@ -576,6 +591,33 @@ public class GuiManager
             }
         }
      */
+    
+    private class BlockAction
+    extends AbstractAction
+{
+    public BlockAction()
+    {
+        super("Block/Unblock user");
+    }
+   
+
+    @SuppressWarnings("deprecation")
+	public void actionPerformed(ActionEvent evt)
+    {
+    	System.out.println("Blocking button pressed");
+    	if (blockSplash != null)
+			 blockSplash.dispose(); 
+		 blockSplash = new BlockSplash (phoneFrame, true);
+		for (int i = listeners.size() - 1; i>=0; i--) {
+			 ((UserActionListener) listeners.get(i)).handleGetBlockList();
+		}
+		blockSplash.show();
+		for (int i = listeners.size() -1; i>=0; i--){
+			 ((UserActionListener) listeners.get(i)).handleNewBlockRequest();
+		}
+    }
+}
+    
     private class SetupWizardAction
         extends AbstractAction
     {
@@ -697,6 +739,13 @@ public class GuiManager
         authenticationSplash.show();
     }
 
+    public void alertError(String message) {
+		JOptionPane.showMessageDialog(null, message);
+	}
+    
+    public String getUserName() {
+		return registrationSplash.userName;
+	}
     
     public String getEmail() {
 		return registrationSplash.mail;
@@ -720,7 +769,15 @@ public class GuiManager
 				: authenticationSplash.password;
 	}
 
-    
+	//blocking
+	
+		public String getBlock(){
+			return blockSplash.toUser;
+		}
+		
+		public String getAction(){
+			return blockSplash.action;
+		}
     
     
     /**

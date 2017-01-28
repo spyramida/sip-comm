@@ -59,7 +59,7 @@ package net.java.sip.communicator.gui;
 
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.JMenuItem;
+
 import net.java.sip.communicator.common.Utils;
 import java.awt.event.KeyEvent;
 
@@ -79,6 +79,7 @@ class MenuBar
 {
     JMenu callMenu = new JMenu("Call");
     JMenu settingsMenu = new JMenu("Settings");
+    JMenu actionsMenu = new JMenu("Actions");
     JMenu helpMenu = new JMenu("Help");
     Action exitAction;
     private ConfigFrame configFrame;
@@ -87,6 +88,7 @@ class MenuBar
         callMenu.setMnemonic('C');
         settingsMenu.setMnemonic('S');
         helpMenu.setMnemonic('H');
+        add(actionsMenu);
         add(callMenu);
         add(settingsMenu);
         add(helpMenu);
@@ -98,6 +100,33 @@ class MenuBar
         this.configFrame = configFrame;
     }
 
+    public void addBillAction(Action action)
+    {
+        JMenuItem config = new JMenuItem(action);
+        config.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0));
+        config.setMnemonic('L');
+
+        actionsMenu.add(config);
+    }
+    
+    public void addForwardAction(Action action)
+    {
+    	JMenuItem config = new JMenuItem(action);
+        config.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0));
+        config.setMnemonic('F');
+
+        actionsMenu.add(config);
+    }
+    
+    public void addBlockAction(Action action)
+    {
+    	JMenuItem config = new JMenuItem(action);
+        config.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0));
+        config.setMnemonic('B');
+
+        actionsMenu.add(config);
+    }
+    
     void addConfigCallAction(Action action)
     {
         JMenuItem config = new JMenuItem(action);

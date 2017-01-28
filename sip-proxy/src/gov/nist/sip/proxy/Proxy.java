@@ -13,6 +13,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import gov.nist.sip.proxy.authentication.*;
+//import gov.nist.sip.proxy.billing.ManageBilling;
+import gov.nist.sip.proxy.blocking.BlockingService;
+//import gov.nist.sip.proxy.forwarding.ForwardingService;
 import gov.nist.sip.proxy.presenceserver.*;
 import gov.nist.sip.proxy.router.*;
 import gov.nist.sip.proxy.utils.FileIOHelper;
@@ -54,6 +57,15 @@ public class Proxy implements SipListener  {
     protected Authentication authentication;
     protected RequestForwarding requestForwarding;
     protected ResponseForwarding responseForwarding;
+    
+  //blocking
+  	protected BlockingService blockingService;
+  	
+  //forwarding
+//    protected ForwardingService forwardingService;
+    
+    //billing
+//    protected ManageBilling manageBilling;
 
    
     public RequestForwarding getRequestForwarding() {
@@ -148,6 +160,12 @@ public class Proxy implements SipListener  {
                     registrar=new Registrar(this);
                     requestForwarding=new RequestForwarding(this);
                     responseForwarding=new ResponseForwarding(this);
+                    //forwarding
+                   // forwardingService = new ForwardingService(this);
+                    //billing
+                    //manageBilling = new ManageBilling();
+					//blocking
+					blockingService = new BlockingService(this);
                 }
             }
             catch (Exception ex) {
@@ -237,6 +255,10 @@ public class Proxy implements SipListener  {
                     " targeted for the proxy, we ignore it");
                     return;
                 }
+            
+                //  manageBilling.startBilling(request);
+                //  request = forwardingService.checkAndSetForwarding(request);
+            
             }
             
            
@@ -567,6 +589,42 @@ public class Proxy implements SipListener  {
 	    }
 
 		
+	    
+	    if ( request.getMethod().equals(Request.INVITE) ) {
+		    
+	    	//blocking
+	    	boolean blocked = blockingService.checkIfBlock(request);
+	    	if (blocked) {
+	    		Response response = messageFactory.createResponse(Response.BUSY_HERE, request);
+	    		if (serverTransaction != null)
+	    			serverTransaction.sendResponse(response);
+	    		else
+	    			sipProvider.sendResponse(response);
+	    		return;
+	    	}
+		
+	    	//to come at this point, means that the direct caller is not blocked, so we check for forwarding
+		
+	    	//forwarding
+	    /*	
+	    	System.out.println("\n\n\n\n"+request.toString()+"\n\n\n\n");
+	    	request = forwardingService.checkAndSetForwarding(request);
+	    	System.out.println("\n\n\n\n"+request.toString()+"\n\n\n\n");
+	    	
+	    	blocked = blockingService.checkIfBlock(request);
+	    	if (blocked) {
+	    		Response response = messageFactory.createResponse(
+	    				Response.BUSY_HERE, request);
+	    		if (serverTransaction != null)
+	    			serverTransaction.sendResponse(response);
+	    		else
+	    			sipProvider.sendResponse(response);
+	    		return;
+	    	}
+		*/
+	   }
+	    
+	    
 
 
 	
@@ -579,6 +637,17 @@ public class Proxy implements SipListener  {
 			("Proxy, null server transactin for BYE");
 		  return;
 		}
+	     
+/*	     boolean isCaller = manageBilling.isCaller(request);
+	     
+		    manageBilling.stopBilling(request);
+		    
+		    if (isCaller){
+		    	System.out.println("\n\n\n\n\n\n mpika sto if tou proxy \n\n\n\n\n");
+		    	request = forwardingService.checkAndSetForwarding(request);
+	    	}
+*/		    
+		    
 		Dialog d = serverTransaction.getDialog();
 		TransactionsMapping transactionsMapping = 
 			(TransactionsMapping) d.getApplicationData();

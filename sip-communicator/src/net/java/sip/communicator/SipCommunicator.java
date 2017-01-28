@@ -65,10 +65,12 @@ import java.util.*;
 import javax.swing.JOptionPane;
 
 import java.awt.*;
+
+import net.java.sip.communicator.blocking.BlockClient;
 import net.java.sip.communicator.common.*;
 import net.java.sip.communicator.common.Console;
 import net.java.sip.communicator.db.RegisterDB;
-//import net.java.sip.communicator.db.RegisterDB;
+//import net.java.sip.communicator.forwarding.ForwardClient;
 import net.java.sip.communicator.gui.*;
 import net.java.sip.communicator.gui.event.*;
 import net.java.sip.communicator.media.*;
@@ -106,6 +108,8 @@ public class SipCommunicator
     protected SimpleContactList        simpleContactList        = null;
     protected PresenceStatusController presenceStatusController = null;
 
+    protected BlockClient blockClient = null;
+    
     protected Integer unregistrationLock = new Integer(0);
 
     public SipCommunicator()
@@ -419,6 +423,80 @@ public class SipCommunicator
         }
     }
 
+  //forwarding
+  	@Override 	 	
+  		public void handleGetForwardRequest() { 	 	
+  	/*		if (forwardClient == null) 	 	
+  				forwardClient = new ForwardClient(sipManager); // lazy initialize 	 	
+  			guiManager.setForwardTo(forwardClient.getForward(guiManager 	 	
+  					.getAuthenticationUserName())); 	 	
+  	*/	
+  		} 	 	
+  	
+  	 	 	
+  		@Override 	 	
+  		public void handleNewForwardRequest() { 	 	
+  		/*	String toUser = guiManager.getForwardToUser(); 	 	
+  			String fromUser = guiManager.getAuthenticationUserName(); 	 	
+  	 	 	
+  			if (toUser != null) 	 	
+  				if (toUser.equals("")) { 	 	
+  					forwardClient.resetForward(fromUser); 	 	
+  					System.out.println("Please reset"); 	 	
+  				} else 	 	
+  					try { 	 	
+  						forwardClient.setForward(fromUser, toUser); 	 	
+  					} catch (NoSuchElementException e) { 	 	
+  						guiManager.alertError("There is no " + toUser + " user"); 	 	
+  					} catch (RuntimeException e) { 	 	
+  						guiManager 	 	
+  								.alertError("Aborted: This forward request creates a forwarding circle"); 	 	
+  				} 	 	
+  		*/
+  		} 
+    
+	//blocking
+	@Override
+	public void handleGetBlockList() {
+		if (blockClient == null)
+			blockClient = new BlockClient(); // lazy initialize
+		String fromUser = guiManager.getAuthenticationUserName();
+		if (fromUser == null){
+			fromUser=guiManager.getUserName();
+		}
+		guiManager.setBlockList(blockClient.getBlocks(fromUser));
+	}
+
+	@Override
+	public void handleNewBlockRequest() {
+		String toUser = guiManager.getBlock();
+		String fromUser = guiManager.getAuthenticationUserName();
+		String action = guiManager.getAction();
+		
+		if (fromUser == null) 
+			fromUser = guiManager.getUserName();
+			if (toUser != null)
+				if (toUser.equals("")) {
+				} else {
+					if (action == "block") {
+						try {
+							blockClient.blockUser(fromUser, toUser);
+						} catch (NoSuchElementException e) {
+							guiManager.alertError("There is no " + toUser
+									+ " user");
+						}
+					} else
+						try {
+							blockClient.unblockUser(fromUser, toUser);
+						} catch (NoSuchElementException e) {
+							guiManager.alertError("There is no " + toUser
+									+ " user");
+						}
+				}
+		
+	}
+
+	
     /**
      * Tries to launch the NIST traces viewer.
      * Changes made by M.Ranganathan to match new logging system.
@@ -804,6 +882,14 @@ public class SipCommunicator
 
 			if (guiManager.shouldRegister())
 				return obtainCredentialsAndRegister();
+			
+			//At this point only login, so we do a password check since we know that the username is correct
+			RegisterDB rm = new RegisterDB();
+			boolean passwordCheck = rm.checkPassword(guiManager.getAuthenticationUserName(), guiManager.getAuthenticationPassword());
+			if (!passwordCheck) {
+				JOptionPane.showMessageDialog(new Frame(), "Wrong Password");
+			   	this.obtainCredentials(realm, defaultValues);
+			}
             
             UserCredentials credentials = new UserCredentials();
 

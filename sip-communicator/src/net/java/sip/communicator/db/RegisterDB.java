@@ -1,3 +1,4 @@
+
 package net.java.sip.communicator.db;
 
 import java.sql.Connection;
@@ -35,7 +36,7 @@ public class RegisterDB {
 			if (connection == null)
 				register();
 			statement = connection.createStatement();
-			String sql = "SELECT userId FROM Users where username = '" + username + "'";
+			String sql = "SELECT username FROM Users where username = '" + username + "'";
 			ResultSet rs = statement.executeQuery(sql);
 			if (rs.next())
 				return true;
