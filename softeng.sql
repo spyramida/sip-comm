@@ -2,22 +2,21 @@
 drop table if exists Users;
 drop table if exists Billing;
 drop table if exists Blocking;
-drop table if exists Forward;
+drop table if exists Forwarding;
 
 
 /* Create the schema for our tables */
-create table Users(userId int NOT NULL AUTO_INCREMENT, username text NOT NULL, email text, password text, creditCard int, plan text, 
+create table Users(userId int AUTO_INCREMENT,username text NOT NULL, email text, password text, creditCard int, plan text, 
 	PRIMARY KEY (userId)) ENGINE=INNODB;
 
-/*
-create table (LId int NOT NULL, Name text, Town text, StreetName text, StreetNumber int, PostalCode int, 
-	PRIMARY KEY (LId)) ENGINE=INNODB;
 
-create table Intermediary(MId int NOT NULL, Name text, Town text, StreetName text, StreetNumber int, PostalCode int, 
-	PRIMARY KEY (MId)) ENGINE=INNODB;
 
-create table LoanRequest(BId int NOT NULL, DateOfRequest date NOT NULL, Deadline date, Amount int, PaybackPeriod int, Description text, 
-Percentage float,
-  PRIMARY KEY(BId,DateOfRequest),
-  FOREIGN KEY (BId) REFERENCES Borrower(BId) ON DELETE CASCADE) ENGINE=INNODB;
-*/
+create table Forwarding(ForwardFrom text NOT NULL, ForwardTo text NOT NULL) ENGINE=INNODB;
+
+create table Blocking(blockedFrom text NOT NULL, blocked text NOT NULL) ENGINE=INNODB;
+
+create table Billing(id int AUTO_INCREMENT,caller text NOT NULL, callee text NOT NULL,start_time  BIGINT, duration  BIGINT,
+	cost TEXT,
+    PRIMARY KEY(id)) ENGINE=INNODB;
+
+

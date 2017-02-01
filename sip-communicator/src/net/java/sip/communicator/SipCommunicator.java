@@ -70,6 +70,7 @@ import net.java.sip.communicator.blocking.BlockClient;
 import net.java.sip.communicator.common.*;
 import net.java.sip.communicator.common.Console;
 import net.java.sip.communicator.db.RegisterDB;
+import net.java.sip.communicator.forwarding.ForwardClient;
 //import net.java.sip.communicator.forwarding.ForwardClient;
 import net.java.sip.communicator.gui.*;
 import net.java.sip.communicator.gui.event.*;
@@ -109,6 +110,7 @@ public class SipCommunicator
     protected PresenceStatusController presenceStatusController = null;
 
     protected BlockClient blockClient = null;
+    protected ForwardClient forwardClient = null;
     
     protected Integer unregistrationLock = new Integer(0);
 
@@ -426,17 +428,17 @@ public class SipCommunicator
   //forwarding
   	@Override 	 	
   		public void handleGetForwardRequest() { 	 	
-  	/*		if (forwardClient == null) 	 	
+  			if (forwardClient == null) 	 	
   				forwardClient = new ForwardClient(sipManager); // lazy initialize 	 	
   			guiManager.setForwardTo(forwardClient.getForward(guiManager 	 	
   					.getAuthenticationUserName())); 	 	
-  	*/	
+  		
   		} 	 	
   	
   	 	 	
   		@Override 	 	
   		public void handleNewForwardRequest() { 	 	
-  		/*	String toUser = guiManager.getForwardToUser(); 	 	
+  			String toUser = guiManager.getForwardToUser(); 	 	
   			String fromUser = guiManager.getAuthenticationUserName(); 	 	
   	 	 	
   			if (toUser != null) 	 	
@@ -452,7 +454,7 @@ public class SipCommunicator
   						guiManager 	 	
   								.alertError("Aborted: This forward request creates a forwarding circle"); 	 	
   				} 	 	
-  		*/
+  		
   		} 
     
 	//blocking

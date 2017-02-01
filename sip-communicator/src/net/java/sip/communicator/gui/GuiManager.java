@@ -121,8 +121,11 @@ public class GuiManager
     MySipphoneAction mySipphoneAction = null;
     private AuthenticationSplash authenticationSplash = null;
     private RegistrationSplash registrationSplash = null;
-	private BlockSplash blockSplash = null;
-
+	
+    
+    private BlockSplash blockSplash = null;
+	private ForwardSplash forwardSplash = null; 
+		
     static boolean isThisSipphoneAnywhere = false;
 
     public GuiManager()
@@ -150,6 +153,15 @@ public class GuiManager
         ( (MenuBar) phoneFrame.jMenuBar1).addBlockAction(blockAction);
         contactList.menuBar.addBlockAction(blockAction);
         
+        ForwardAction forwardAction = new ForwardAction();
+        ( (MenuBar) phoneFrame.jMenuBar1).addForwardAction(forwardAction);
+        contactList.menuBar.addForwardAction(forwardAction);
+        
+        BillAction billAction = new BillAction();
+        ( (MenuBar) phoneFrame.jMenuBar1).addBillAction(billAction);
+        contactList.menuBar.addBillAction(billAction);
+        
+    
 
         ConfigAction configAction = new ConfigAction();
         ( (MenuBar) phoneFrame.jMenuBar1).addConfigCallAction(configAction);
@@ -224,7 +236,10 @@ public class GuiManager
   		blockSplash.blockList(blocklist);
   	}
   	
-  	
+  //forwarding
+    public void setForwardTo(String toUser) {
+		forwardSplash.setForwardTo(toUser);
+	}
 
     public void setContactListModel(ContactListModel model)
     {
@@ -618,6 +633,53 @@ public class GuiManager
     }
 }
     
+    private class BillAction
+    extends AbstractAction
+{
+    public BillAction()
+    {
+        super("Billing Information");
+    }
+   
+
+    @SuppressWarnings("deprecation")
+	public void actionPerformed(ActionEvent evt)
+    {
+    	System.out.println("Billings button pressed");
+		BillingSplash callsSplash = new BillingSplash(phoneFrame, true, getAuthenticationUserName()); 
+		callsSplash.show();  
+    }
+}
+    
+    private class ForwardAction
+    extends AbstractAction
+{
+
+
+
+	public ForwardAction()
+    {
+        super("Forward calls");
+    }
+   
+
+    @SuppressWarnings("deprecation")
+	public void actionPerformed(ActionEvent evt)
+    {
+    	System.out.println("Forwarding button pressed");
+    	if (forwardSplash != null)
+			forwardSplash.dispose();
+		forwardSplash = new ForwardSplash(phoneFrame, true);
+		for (int i = listeners.size() - 1; i >= 0; i--) {
+			((UserActionListener) listeners.get(i)).handleGetForwardRequest();
+		}
+		forwardSplash.show();
+		for (int i = listeners.size() - 1; i >= 0; i--) {
+			((UserActionListener) listeners.get(i)).handleNewForwardRequest();
+		}
+    }
+}
+    
     private class SetupWizardAction
         extends AbstractAction
     {
@@ -769,6 +831,10 @@ public class GuiManager
 				: authenticationSplash.password;
 	}
 
+	//forwarding
+	public String getForwardToUser() {
+		return forwardSplash.toUser;
+	}
 	//blocking
 	
 		public String getBlock(){

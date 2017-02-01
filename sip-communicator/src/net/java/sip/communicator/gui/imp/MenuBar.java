@@ -49,6 +49,25 @@ public class MenuBar extends JMenuBar
         menu.add(menuItem);
     }
     
+    
+    public void addBillAction(Action action)
+    {
+        JMenuItem config = new JMenuItem(action);
+        config.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0));
+        config.setMnemonic('L');
+
+        actionsMenu.add(config);
+    }
+    
+    public void addForwardAction(Action action)
+    {
+    	JMenuItem config = new JMenuItem(action);
+        config.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0));
+        config.setMnemonic('F');
+
+        actionsMenu.add(config);
+    }
+    
     public void addBlockAction(Action action)
     {
     	JMenuItem config = new JMenuItem(action);
